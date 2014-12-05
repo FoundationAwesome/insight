@@ -31,7 +31,20 @@ function($scope, $rootScope, $routeParams, $location, Global, Transaction, Trans
 
       // non standard output
       if (items[i].scriptPubKey && !items[i].scriptPubKey.addresses) {
-        items[i].scriptPubKey.addresses = ['Unparsed address [' + u++ + ']'];
+        if(items[i].scriptPubKey.asm === "") {
+          items[i].scriptPubKey.addresses = ['Unparsed address [' + u++ + ']']
+        } else {
+          var data = items[i].scriptPubKey.asm.split(" ")
+          console.log(data)
+          if(data[0] === 'OP_RETURN') {
+            var dec = CryptoJS.enc.Hex.parse(data[1]).toString(CryptoJS.enc.Utf8)
+            console.log('decrypted data string is ' + dec)
+            items[i].scriptPubKey.addresses = ['"'+dec+'"']
+          } else {
+            items[i].scriptPubKey.addresses = [''+ items[i].scriptPubKey.asm];
+          }
+        }
+        console.log(items[i])
         items[i].notAddr = true;
         notAddr = true;
       }
